@@ -6,7 +6,7 @@ import numpy as np
 # =====================
 # Parameters
 # =====================
-model_path = "final_model.h5"   # trained model
+model_path = "best_model.keras"   # trained model
 img_size = (224, 224)           # same size used in training
 
 # Load trained model
@@ -21,10 +21,10 @@ class_mapping = {0: "bad", 1: "good"}  # depends on ImageDataGenerator order
 
 
 def predict_image(img_path):
-    img = image.load_img(img_path, target_size=img_size)
+    img = image.load_img(img_path, target_size=img_size, color_mode="grayscale")
     img_array = image.img_to_array(img)
-    img_array = img_array / 255.0  # rescale
-    img_array = np.expand_dims(img_array, axis=0)  # batch dimension
+    img_array = img_array / 255.0
+    img_array = np.expand_dims(img_array, axis=0)  # (1,224,224,1)
 
     pred_prob = model.predict(img_array)[0][0]
     if pred_prob > 0.5:
@@ -39,5 +39,6 @@ def predict_image(img_path):
 # =====================
 # User input
 # =====================
-img_path = input("Enter path to image: ").strip()
+# img_path = input("Enter path to image: ").strip()
+img_path = "dataset/test/good/cast_ok_0_397.jpeg"
 predict_image(img_path)

@@ -12,6 +12,7 @@ __pycache__/
 train/
 dataset/
 products-defect-detection/
+raw/
 
 # Other
 .env

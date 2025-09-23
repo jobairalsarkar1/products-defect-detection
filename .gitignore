@@ -1,9 +1,17 @@
-.env
-/produts-defect-detection
-__pycache__
+# Python environment
+env/
+__pycache__/
 *.pyc
+
+# Mac/VSCode/Jupyter
 .DS_Store
 .ipynb_checkpoints
-.vscode
-train
-/dataset
+.vscode/
+
+# Data and training folders
+train/
+dataset/
+products-defect-detection/
+
+# Other
+.env

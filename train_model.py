@@ -6,7 +6,7 @@ import seaborn as sns
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications import EfficientNetB0
-from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
+from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout, Input
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 
@@ -34,6 +34,7 @@ val_test_datagen = ImageDataGenerator(rescale=1./255)
 train_gen = train_datagen.flow_from_directory(
     os.path.join(dataset_dir, "train"),
     target_size=img_size,
+    color_mode="grayscale",  # grayscale
     batch_size=batch_size,
     class_mode="binary",
     shuffle=True
@@ -42,6 +43,7 @@ train_gen = train_datagen.flow_from_directory(
 val_gen = val_test_datagen.flow_from_directory(
     os.path.join(dataset_dir, "val"),
     target_size=img_size,
+    color_mode="grayscale",
     batch_size=batch_size,
     class_mode="binary",
     shuffle=False
@@ -50,6 +52,7 @@ val_gen = val_test_datagen.flow_from_directory(
 test_gen = val_test_datagen.flow_from_directory(
     os.path.join(dataset_dir, "test"),
     target_size=img_size,
+    color_mode="grayscale",
     batch_size=batch_size,
     class_mode="binary",
     shuffle=False
@@ -58,9 +61,12 @@ test_gen = val_test_datagen.flow_from_directory(
 # =====================
 # Build Model
 # =====================
+input_tensor = Input(shape=(224, 224, 1))  # 1 channel for grayscale
 base_model = EfficientNetB0(
-    include_top=False, weights="imagenet", input_shape=(224, 224, 3))
-base_model.trainable = False  # freeze base model
+    include_top=False,
+    weights=None,  # train from scratch
+    input_tensor=input_tensor
+)
 
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
@@ -81,7 +87,7 @@ model.summary()
 # Callbacks
 # =====================
 checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(
-    "best_model.h5", monitor="val_accuracy", save_best_only=True, verbose=1
+    "best_model.keras", monitor="val_accuracy", save_best_only=True, verbose=1
 )
 
 earlystop_cb = tf.keras.callbacks.EarlyStopping(

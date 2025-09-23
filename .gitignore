@@ -1,0 +1,18 @@
+# Python environment
+env/
+__pycache__/
+*.pyc
+
+# Mac/VSCode/Jupyter
+.DS_Store
+.ipynb_checkpoints
+.vscode/
+
+# Data and training folders
+train/
+dataset/
+products-defect-detection/
+raw/
+
+# Other
+.env

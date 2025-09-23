@@ -5,7 +5,7 @@ from sklearn.metrics import confusion_matrix, classification_report
 import seaborn as sns
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.applications import EfficientNetB0
+from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout, Input
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
@@ -16,7 +16,16 @@ from tensorflow.keras.optimizers import Adam
 dataset_dir = "dataset"
 img_size = (224, 224)
 batch_size = 16
-epochs = 10  # adjust based on your device speed
+epochs = 10
+model_name = "MobileNetV2"
+
+# =====================
+# Folders for saving
+# =====================
+results_dir = "results"
+models_dir = "saved_models"
+os.makedirs(results_dir, exist_ok=True)
+os.makedirs(models_dir, exist_ok=True)
 
 # =====================
 # Data Generators
@@ -34,7 +43,7 @@ val_test_datagen = ImageDataGenerator(rescale=1./255)
 train_gen = train_datagen.flow_from_directory(
     os.path.join(dataset_dir, "train"),
     target_size=img_size,
-    color_mode="grayscale",  # grayscale
+    color_mode="grayscale",
     batch_size=batch_size,
     class_mode="binary",
     shuffle=True
@@ -61,10 +70,10 @@ test_gen = val_test_datagen.flow_from_directory(
 # =====================
 # Build Model
 # =====================
-input_tensor = Input(shape=(224, 224, 1))  # 1 channel for grayscale
-base_model = EfficientNetB0(
+input_tensor = Input(shape=(224, 224, 1))  # grayscale input
+base_model = MobileNetV2(
     include_top=False,
-    weights=None,  # train from scratch
+    weights=None,   # training from scratch
     input_tensor=input_tensor
 )
 
@@ -87,7 +96,10 @@ model.summary()
 # Callbacks
 # =====================
 checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(
-    "best_model.keras", monitor="val_accuracy", save_best_only=True, verbose=1
+    os.path.join(models_dir, f"{model_name}_best_model.keras"),
+    monitor="val_accuracy",
+    save_best_only=True,
+    verbose=1
 )
 
 earlystop_cb = tf.keras.callbacks.EarlyStopping(
@@ -110,7 +122,6 @@ history = model.fit(
 test_gen.reset()
 y_pred_prob = model.predict(test_gen, verbose=1)
 y_pred = (y_pred_prob > 0.5).astype(int)
-
 y_true = test_gen.classes
 
 # =====================
@@ -124,15 +135,17 @@ sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
 plt.xlabel("Predicted")
 plt.ylabel("Actual")
 plt.title("Confusion Matrix")
-plt.show()
+plt.savefig(os.path.join(results_dir, f"{model_name}_confusion_matrix.png"))
+plt.close()
 
 # =====================
 # Classification Report
 # =====================
 report = classification_report(
-    y_true, y_pred, target_names=test_gen.class_indices.keys())
-print("Classification Report:\n")
-print(report)
+    y_true, y_pred, target_names=test_gen.class_indices.keys()
+)
+with open(os.path.join(results_dir, f"{model_name}_classification_report.txt"), "w") as f:
+    f.write(report)
 
 # =====================
 # Plot Training History
@@ -149,10 +162,12 @@ plt.plot(history.history["loss"], label="train_loss")
 plt.plot(history.history["val_loss"], label="val_loss")
 plt.title("Loss")
 plt.legend()
-plt.show()
+
+plt.savefig(os.path.join(results_dir, f"{model_name}_training_history.png"))
+plt.close()
 
 # =====================
 # Save Final Model
 # =====================
-model.save("final_model.keras")
-print("Training complete! Model saved as final_model.h5")
+model.save(os.path.join(models_dir, f"{model_name}_final_model.keras"))
+print(f"Training complete! Model saved as {model_name}_final_model.keras")

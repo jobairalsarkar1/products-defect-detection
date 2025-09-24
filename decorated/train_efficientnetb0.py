@@ -18,13 +18,20 @@ dataset_dir = "dataset/pump"
 results_dir = "results"
 models_dir = "saved_models"
 
-os.makedirs(results_dir, exist_ok=True)
-os.makedirs(models_dir, exist_ok=True)
+# get product name from dataset_dir
+product_name = os.path.basename(dataset_dir.rstrip("/"))
 
 model_name = "EfficientNetB0"  # prefix for saving
 img_size = (224, 224)
 batch_size = 16
 epochs = 10  # adjust based on your device speed
+
+# redefine dirs with product_name and model_name subfolders
+results_dir = os.path.join(results_dir, product_name, model_name)
+models_dir = os.path.join(models_dir, product_name, model_name)
+
+os.makedirs(results_dir, exist_ok=True)
+os.makedirs(models_dir, exist_ok=True)
 
 # =====================
 # Data Generators

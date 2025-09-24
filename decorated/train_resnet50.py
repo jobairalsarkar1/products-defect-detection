@@ -15,16 +15,23 @@ from tensorflow.keras.optimizers import Adam
 # =====================
 # See the pump part which is the product name make sure it exist and will be different for different products.
 dataset_dir = "dataset/pump"
-results_dir = "results"
-models_dir = "saved_models"
-
-os.makedirs(results_dir, exist_ok=True)
-os.makedirs(models_dir, exist_ok=True)
-
 model_name = "ResNet50"
 img_size = (224, 224)
 batch_size = 16
 epochs = 10  # adjust as needed
+
+# =====================
+# Folders for saving
+# =====================
+# get product name from dataset_dir
+product_name = os.path.basename(dataset_dir.rstrip("/"))
+
+# redefine dirs with product_name and model_name subfolders
+results_dir = os.path.join("results", product_name, model_name)
+models_dir = os.path.join("saved_models", product_name, model_name)
+
+os.makedirs(results_dir, exist_ok=True)
+os.makedirs(models_dir, exist_ok=True)
 
 # =====================
 # Data Generators

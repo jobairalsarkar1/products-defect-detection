@@ -23,8 +23,13 @@ model_name = "MobileNetV2"
 # =====================
 # Folders for saving
 # =====================
-results_dir = "results"
-models_dir = "saved_models"
+# get product name from dataset_dir
+product_name = os.path.basename(dataset_dir.rstrip("/"))
+
+# redefine dirs with product_name and model_name subfolders
+results_dir = os.path.join("results", product_name, model_name)
+models_dir = os.path.join("saved_models", product_name, model_name)
+
 os.makedirs(results_dir, exist_ok=True)
 os.makedirs(models_dir, exist_ok=True)
 
@@ -176,4 +181,5 @@ plt.close()
 # Save Final Model
 # =====================
 model.save(os.path.join(models_dir, f"{model_name}_final_model.keras"))
-print(f"Training complete! Model saved as {model_name}_final_model.keras")
+print(
+    f"Training complete! Model saved as {os.path.join(models_dir, f'{model_name}_final_model.keras')}")

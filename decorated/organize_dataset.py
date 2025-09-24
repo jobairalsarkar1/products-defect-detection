@@ -6,7 +6,7 @@ from tqdm import tqdm
 # =====================
 # User inputs
 # =====================
-product_name = input("Enter the product name: ").strip()
+product_name = input("Enter the product name (pill, pump, fabric, hazelnut): ").strip()
 source_folder = input(
     "Enter the path to the folder containing images: ").strip()
 

@@ -13,7 +13,8 @@ from tensorflow.keras.optimizers import Adam
 # =====================
 # Parameters
 # =====================
-dataset_dir = "dataset"
+# See the pump part which is the product name make sure it exist and will be different for different products.
+dataset_dir = "dataset/pump"
 img_size = (224, 224)
 batch_size = 16
 epochs = 10
@@ -40,6 +41,7 @@ train_datagen = ImageDataGenerator(
 
 val_test_datagen = ImageDataGenerator(rescale=1./255)
 
+# color_mode="rgb",  # RGB input (If images are RGB, use this line instead of grayscale)
 train_gen = train_datagen.flow_from_directory(
     os.path.join(dataset_dir, "train"),
     target_size=img_size,
@@ -49,6 +51,7 @@ train_gen = train_datagen.flow_from_directory(
     shuffle=True
 )
 
+# color_mode="rgb",  # RGB input (If images are RGB, use this line instead of grayscale)
 val_gen = val_test_datagen.flow_from_directory(
     os.path.join(dataset_dir, "val"),
     target_size=img_size,
@@ -58,6 +61,7 @@ val_gen = val_test_datagen.flow_from_directory(
     shuffle=False
 )
 
+# color_mode="rgb",  # RGB input (If images are RGB, use this line instead of grayscale)
 test_gen = val_test_datagen.flow_from_directory(
     os.path.join(dataset_dir, "test"),
     target_size=img_size,
@@ -70,7 +74,9 @@ test_gen = val_test_datagen.flow_from_directory(
 # =====================
 # Build Model
 # =====================
+# input_tensor = Input(shape=(224, 224, 3)) # RGB
 input_tensor = Input(shape=(224, 224, 1))  # grayscale input
+
 base_model = MobileNetV2(
     include_top=False,
     weights=None,   # training from scratch

@@ -13,6 +13,7 @@ train/
 dataset/
 products-defect-detection/
 raw/
-
+Densenet/
+Effficientnet/
 # Other
 .env
